@@ -29,9 +29,9 @@ print("типи полів кожного запису:")
 print(df.dtypes)
 
 #----------------------------5
-df['date'] = pd.to_datetime(df['CET']).dt.strftime('%d')
-df['month'] = pd.to_datetime(df['CET']).dt.strftime('%m')
-df['year'] = pd.to_datetime(df['CET']).dt.strftime('%Y')
+df['date'] = pd.to_datetime(df['CET']).dt.day
+df['month'] = pd.to_datetime(df['CET']).dt.month
+df['year'] = pd.to_datetime(df['CET']).dt.year
 
 df.drop(columns=['CET'], inplace=True)
 print(df.head())
@@ -85,11 +85,22 @@ wind_direction_counts = df['WindDirCompass'].value_counts()
 plt.figure(figsize=(8, 8))
 plt.pie(wind_direction_counts, labels=wind_direction_counts.index, autopct='%1.1f%%', startangle=90)
 plt.title('кругова діаграма напрямків вітру')
-plt.axis('equal')
 plt.show()
 
 #----------------------------10
+avg_max_temp_per_month_year = df.groupby(['year', 'month'])['Max TemperatureC'].mean()
+avg_min_dew_point_per_month_year = df.groupby(['year', 'month'])['Min DewpointC'].mean()
+fig, ax = plt.subplots(2, 1, figsize=(10, 8))
+
 #--a) середня по кожному місяцю кожного року максимальна температура
+avg_max_temp_per_month_year.unstack().plot(ax=ax[0], marker='o')
+ax[0].set_title('середня макс. температура за місяць та рік')
+ax[0].set_ylabel('середня макс. температура (°C)')
 
 #--б) середня по кожному місяцю кожного року мінімальна точка роси
+avg_min_dew_point_per_month_year.unstack().plot(ax=ax[1], marker='o')
+ax[1].set_title('середня мін. точка роси за місяць та рік')
+ax[1].set_ylabel('середня мін. точка роси (°C)')
 
+plt.tight_layout()
+plt.show()
