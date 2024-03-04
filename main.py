@@ -58,9 +58,9 @@ print("середня макс. температура по кожному дн�
 print(daily_max_temp_avg)
 
 #--б) к-кість днів у кожному році з туманом
-#num_fog_days_per_year = df[df[' Events'].str.contains('Fog', na=False)].groupby(df['date'].dt.year)[' Events'].count()
-#print("\nк-кість днів у кожному році з туманом:")
-#print(num_fog_days_per_year)
+foggy_days_per_year = df[df[' Events'].str.contains('Fog', na=False)].groupby(df['year'])[' Events'].count()
+print("Кількість днів у кожному році з туманом:")
+print(foggy_days_per_year)
 
 #----------------------------8
 events_count = df[' Events'].value_counts()
@@ -88,19 +88,18 @@ plt.title('кругова діаграма напрямків вітру')
 plt.show()
 
 #----------------------------10
-avg_max_temp_per_month_year = df.groupby(['year', 'month'])['Max TemperatureC'].mean()
-avg_min_dew_point_per_month_year = df.groupby(['year', 'month'])['Min DewpointC'].mean()
-fig, ax = plt.subplots(2, 1, figsize=(10, 8))
+avg_temp_dew = df.groupby(['month'])[['Max TemperatureC', 'Min DewpointC']].mean()
 
-#--a) середня по кожному місяцю кожного року максимальна температура
-avg_max_temp_per_month_year.unstack().plot(ax=ax[0], marker='o')
-ax[0].set_title('середня макс. температура за місяць та рік')
-ax[0].set_ylabel('середня макс. температура (°C)')
+plt.figure(figsize=(12, 6))
+#--a)
+plt.bar(avg_temp_dew.index - 0.2, avg_temp_dew['Max TemperatureC'], width=0.4, label='середня макс. температура (°C)')
+#--б)
+plt.bar(avg_temp_dew.index + 0.2, avg_temp_dew['Min DewpointC'], width=0.4, label='середня мін. точка роси (°C)')
 
-#--б) середня по кожному місяцю кожного року мінімальна точка роси
-avg_min_dew_point_per_month_year.unstack().plot(ax=ax[1], marker='o')
-ax[1].set_title('середня мін. точка роси за місяць та рік')
-ax[1].set_ylabel('середня мін. точка роси (°C)')
-
+plt.title('ср. макс. температура та мін. точка роси по місяцях')
+plt.xlabel('місяць')
+plt.ylabel('ср. знач.')
+plt.xticks(avg_temp_dew.index, ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'])
+plt.legend()
 plt.tight_layout()
 plt.show()
